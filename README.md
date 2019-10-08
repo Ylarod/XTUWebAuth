@@ -18,13 +18,9 @@
 
 先安装Python环境，然后执行下面语句安装requests库和re库
 
-'''
-pip install requests
-'''
+* pip install requests
 
-'''
-pip install re
-'''
+* pip install re
 
 然后直接下载脚本
 
