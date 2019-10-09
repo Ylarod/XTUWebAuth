@@ -33,7 +33,7 @@ class XTUWebAuth():
 			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.1 Safari/605.1.15',
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 			'Referer': self.authUrl
-		}
+		    }
 		
 		
 	def makeFormData(self):
