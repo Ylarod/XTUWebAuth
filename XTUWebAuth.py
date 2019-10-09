@@ -89,6 +89,7 @@ class XTUWebAuth():
 			return True,r.text
 		else:
 			return False,r.text
+
 if __name__ == "__main__":
 	if testInternet() == False:
 		obj = XTUWebAuth("[学号]" ,"[密码]")
