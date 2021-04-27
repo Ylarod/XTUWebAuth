@@ -39,7 +39,7 @@ class XTUWebAuth():
 	def makeFormData(self):
 		tmp = "userId={userId}&password={password}&service=&queryString={queryString}&operatorPwd=&operatorUserId=&validcode=&passwordEncrypt=true"
 		tmp = tmp.replace("{userId}", self.userId)
-		tmp = tmp.replace("{password}" , self.RSA_Enc(self.password))
+		tmp = tmp.replace("{password}" , self.password)
 		tmp = tmp.replace("{queryString}", self.queryString)
 		return tmp
 		
@@ -60,10 +60,7 @@ class XTUWebAuth():
 		accessUrl = accessUrl.replace("'</script>","").replace("\r\n","")
 		return accessUrl
 	
-	def RSA_Enc(self,text):
-		return "[RSA加密后的密码，可由以下网址获得]"
-		#return requests.get("http://api.xtuly.cn/XTU_Ruijie_RSA/Enc.php?text=" + text).text
-		
+	
 	def getOnlineUserInfo(self):  #use when online 
 		r = requests.get(self.linkOnlineUseerInfo,timeout= 5)
 		r.encoding='utf-8'
@@ -92,11 +89,11 @@ class XTUWebAuth():
 
 if __name__ == "__main__":
 	if testInternet() == False:
-		obj = XTUWebAuth("[学号]" ,"[密码]")
+		obj = XTUWebAuth("[学号]" ,"[RSA加密后的密码]")
 		status,msg = obj.login()
 		print(status)
 		print(msg)
 	else:
 		print("Already online:")
-		obj = XTUWebAuth("[学号]" ,"[密码]",False)
+		obj = XTUWebAuth("[学号]" ,"[RSA加密后的密码]",False)
 		print(obj.getOnlineUserInfo())
