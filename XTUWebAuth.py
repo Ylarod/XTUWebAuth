@@ -34,6 +34,51 @@ def testInternet():
         return True
     return False
 
+
+def encryptedPassword(
+        password,
+        publicKeyExponent="10001",
+        publicKeyModulus="94dd2a8675fb779e6b9f7103698634cd400f27a154afa67af6166a43fc26417222a79506d34cacc7641946abda1785b7acf9910ad6a0978c91ec84d40b71d2891379af19ffb333e7517e390bd26ac312fe940c340466b4a5d4af1d65c3b5944078f96a1a51a5a53e4bc302818b7c9f63c4a1b07bd7d874cef1c3d4b2f5eb7871"
+):
+    """ RSA加密逻辑 """
+    # 将公钥参数从十六进制转为整数
+    e = int(publicKeyExponent, 16)
+    n = int(publicKeyModulus, 16)
+
+    # 根据模数长度计算 chunkSize（此处模拟 JavaScript 中的 2 * biHighIndex(m) 行为）
+    byte_length = len(publicKeyModulus) // 2  # 模数的字节长度
+    digit_num = (byte_length + 1) // 2  # 模数按 16 位数字（digit）计算的位数
+    high_index = digit_num - 1  # 最高的非零位索引（假设模数为完整长度）
+    chunk_size = 2 * high_index  # 每个加密块的字节数，匹配 JavaScript
+
+    # 反转密码字符串（模拟 password.split("").reverse().join("") 行为）
+    password_encode = password[::-1]
+
+    # 将密码字符串转为字节数组（使用 ASCII 编码）
+    byte_array = [ord(c) for c in password_encode]
+
+    # 如果字节数组长度不是 chunk_size 的倍数，则使用 0 进行填充
+    while len(byte_array) % chunk_size != 0:
+        byte_array.append(0)
+
+    # 对每个分块进行加密
+    encrypted_blocks = []
+    for i in range(0, len(byte_array), chunk_size):
+        # 提取块数据，并将其转为小端字节序的整数
+        block_bytes = byte_array[i:i + chunk_size]
+        block_int = int.from_bytes(block_bytes, 'little')
+
+        # 使用 RSA 加密逻辑：block_int^e mod n
+        crypt_int = pow(block_int, e, n)
+
+        # 将加密后的整数转为十六进制字符串（去掉 '0x' 前缀）
+        crypt_hex = hex(crypt_int)[2:]
+        encrypted_blocks.append(crypt_hex)
+
+    # 通过空格连接加密的块并返回
+    return ' '.join(encrypted_blocks)
+
+
 class XTUWebAuth():
     def __init__(self, userId, password, isInitLogin=True):
         self.userId = userId
@@ -121,13 +166,16 @@ if __name__ == "__main__":
     else:
         user_id = credentials["user_id"]
         password = credentials["password"]
+
+    encrypted = encryptedPassword(password)
+
     # 测试是否已经在线
     if not testInternet():
-        obj = XTUWebAuth(user_id, password)
+        obj = XTUWebAuth(user_id, encrypted)
         status, msg = obj.login()
         print("登录状态:", status)
         print("登录信息:", msg)
     else:
         print("已在线状态:")
-        obj = XTUWebAuth(user_id, password, False)
+        obj = XTUWebAuth(user_id, encrypted, False)
         print(obj.getOnlineUserInfo())
